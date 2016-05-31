@@ -22,7 +22,9 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tencent.smtt.export.external.interfaces.WebResourceRequest;
@@ -105,9 +107,10 @@ public class MainActivity extends AppCompatActivity {
     private boolean mNeedTestPage = false;
     private static final int MAX_LENGTH = 14;
     private ProgressBar mPageLoadingProgressBar;
+    private ImageView img_loading;
     private X5WebView mWebView;
     private ViewGroup mViewParent;
-//    private static final String mHomeUrl = "http://222.180.239.10:9080/dcsapp/JC_UI/login.html";
+    //    private static final String mHomeUrl = "http://222.180.239.10:9080/dcsapp/JC_UI/login.html";
     private static final String mHomeUrl = "http://dms.changan.com.cn/jc-app/JC_UI/login.html";
 //    private static final String mHomeUrl = "file:///android_asset/JC_UI/login.html";
 
@@ -130,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_main);
         mViewParent = (ViewGroup) findViewById(R.id.webView1);
-
+        img_loading= (ImageView) findViewById(R.id.img_loading);
 
         QbSdk.preInit(this);
 
@@ -200,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mWebView.setWebChromeClient(new com.tencent.smtt.sdk.WebChromeClient() {
-//            @Override
+            //            @Override
 //            public void onReceivedTitle(WebView view, String title) {
 //                TbsLog.d("", "title: " + title);
 //                if (mUrl == null)
@@ -215,7 +218,6 @@ public class MainActivity extends AppCompatActivity {
 //                }
 //            }
 
-
             @Override
             public void onProgressChanged(com.tencent.smtt.sdk.WebView view, int newProgress) {
                 // TODO Auto-generated method stub
@@ -224,8 +226,7 @@ public class MainActivity extends AppCompatActivity {
                     mPageLoadingProgressBar.setVisibility(View.VISIBLE);
                 } else if (mPageLoadingProgressBar != null) {
                     mPageLoadingProgressBar.setVisibility(View.GONE);
-
-
+                    img_loading.setVisibility(View.GONE);
                 }
             }
         });
@@ -352,4 +353,20 @@ public class MainActivity extends AppCompatActivity {
         return super.onKeyDown(keyCode, event);
     }
 
+    /**
+     * 连续点击两次退出程序;
+     */
+    private long exitTimeMillis = System.currentTimeMillis();
+
+    @Override
+    public void onBackPressed() {
+        if (System.currentTimeMillis() - exitTimeMillis == 0 || System.currentTimeMillis() - exitTimeMillis > 1000) {
+            exitTimeMillis = System.currentTimeMillis();
+            Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_LONG).show();
+            return;
+        } else {
+            android.os.Process.killProcess(android.os.Process.myPid());//退出
+            System.exit(0);
+        }
+    }
 }
